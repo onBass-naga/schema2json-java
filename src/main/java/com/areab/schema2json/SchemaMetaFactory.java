@@ -57,7 +57,10 @@ public class SchemaMetaFactory {
         String catalog = null;
         ResultSet result = meta.getImportedKeys(catalog, connection.getSchema(), tableName);
 
-        return getKeys(result, "FKTABLE_NAME", "FKCOLUMN_NAME");
+        return getKeys(result, "PKTABLE_NAME", "PKCOLUMN_NAME", "FKTABLE_NAME", "FKCOLUMN_NAME")
+                .stream()
+                .map(key -> key.replaceAll("^(.*?\\..*?)(\\.)(.*?\\..*?)$","$1:$3"))
+                .collect(Collectors.toList());
     }
 
     private static List<String> getKeys(ResultSet result, String... labels) throws SQLException {
@@ -73,7 +76,7 @@ public class SchemaMetaFactory {
 
             keys.add(key);
         }
-        return keys;
+        return keys.stream().sorted().collect(Collectors.toList());
     }
 
     public static Database create(Settings settings) {

@@ -18,11 +18,6 @@ public class Main {
         }
 
         String filePath = args[0];
-        Settings settings = SettingsFileLoader.load(filePath);
-        Database database = SchemaMetaFactory.create(settings);
-
-        if (logger.isDebugEnabled()) { logger.debug("database: " + database); }
-
-        JsonWriter.write(settings.getOutputDirectory(), database);
+        new SchemaToJsonExecutor().execute(filePath);
     }
 }
