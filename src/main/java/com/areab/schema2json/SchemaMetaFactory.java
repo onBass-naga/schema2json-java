@@ -59,7 +59,7 @@ public class SchemaMetaFactory {
 
         return getKeys(result, "PKTABLE_NAME", "PKCOLUMN_NAME", "FKTABLE_NAME", "FKCOLUMN_NAME")
                 .stream()
-                .map(key -> key.replaceAll("^(.*?\\..*?)(\\.)(.*?\\..*?)$","$1:$3"))
+                .map(key -> key.replaceAll("^(.*?\\..*?)(\\.)(.*?\\..*?)$", "$1:$3"))
                 .collect(Collectors.toList());
     }
 
@@ -103,17 +103,20 @@ public class SchemaMetaFactory {
             db.schema = connection.getSchema();
             db.tables = tables;
             return db;
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private static Connection initConnection(Settings settings) throws ClassNotFoundException, SQLException {
-        String driver = settings.getDriverClassName();
-        Class.forName(driver);
-        Connection conn = DriverManager.getConnection(settings.getUrl(), settings.getUsername(), settings.getPassword());
+    private static Connection initConnection(Settings settings) throws ClassNotFoundException, SQLException, IllegalAccessException, InstantiationException {
+        String driverClassName = settings.getDriverClassName();
+        Class<?> driver = Class.forName(driverClassName, true, Thread.currentThread().getContextClassLoader());
+        java.util.Properties credential = new java.util.Properties();
+        credential.put("user", settings.getUsername());
+        credential.put("password", settings.getPassword());
+        Connection conn = ((Driver) driver.newInstance()).connect(settings.getUrl(), credential);
 
-        if (driver.contains("postgres")) {
+        if (driverClassName.contains("postgres")) {
             String schema = settings.getSchema();
             String schemaName = schema == null ? "public" : schema;
             conn.setSchema(schemaName);

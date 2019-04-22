@@ -1,9 +1,11 @@
 plugins {
     id 'java'
+    id 'signing'
+    id 'maven'
 }
 
-group 'com.areab'
-version '1.0-SNAPSHOT'
+group 'com.github.onbass-naga'
+version '1.0.1'
 
 sourceCompatibility = 1.8
 
@@ -48,5 +50,72 @@ jar {
 
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    required { hasProperty("signing.keyId") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            def sonatypeUsername = project.hasProperty("sonatypeUsername") ? project.property("sonatypeUsername") : ""
+            def sonatypePassword = project.hasProperty("sonatypePassword") ? project.property("sonatypePassword") : ""
+
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'Schema2Json'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Schema2Json is a JSON generator. It extract the metadata from a RDB.(PostgreSQL/MySQL)'
+                url 'https://github.com/onBass-naga/schema2json-java'
+
+                scm {
+                    connection 'scm:git:https://github.com/onBass-naga/schema2json-java.git'
+                    developerConnection 'scm:git:https://github.com/onBass-naga/schema2json-java.git'
+                    url 'https://github.com/onBass-naga/schema2json-java'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'naga'
+                        name 'naga'
+                        email 'naga@area-b.com'
+                    }
+                }
+            }
+        }
     }
 }

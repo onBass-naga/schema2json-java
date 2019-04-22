@@ -75,12 +75,12 @@ Add JDBC Driver to classpath and a file path for settings.yaml to jar option.
 ex) PostgreSQL
 
 ```
-$ java -Xbootclasspath/a:../schema2json/libs/postgresql-9.4.1212.jar -jar build/libs/schema2json-1.0-SNAPSHOT.jar ./settings.yaml
+$ java -Xbootclasspath/a:../schema2json/libs/postgresql-9.4.1212.jar -jar build/libs/schema2json-1.0.1.jar ./settings.yaml
 ```
 
 ex) MySQL
 
 ```
-$ java -Xbootclasspath/a:../schema2json/libs/mysql-connector-java-5.1.46.jar -jar build/libs/schema2json-1.0-SNAPSHOT.jar ./settings.yaml
+$ java -Xbootclasspath/a:../schema2json/libs/mysql-connector-java-5.1.46.jar -jar build/libs/schema2json-1.0.1.jar ./settings.yaml
 ```
 
