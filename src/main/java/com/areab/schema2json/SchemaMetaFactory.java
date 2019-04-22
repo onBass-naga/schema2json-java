@@ -59,7 +59,7 @@ public class SchemaMetaFactory {
 
         return getKeys(result, "PKTABLE_NAME", "PKCOLUMN_NAME", "FKTABLE_NAME", "FKCOLUMN_NAME")
                 .stream()
-                .map(key -> key.replaceAll("^(.*?\\..*?)(\\.)(.*?\\..*?)$","$1:$3"))
+                .map(key -> key.replaceAll("^(.*?\\..*?)(\\.)(.*?\\..*?)$", "$1:$3"))
                 .collect(Collectors.toList());
     }
 
