@@ -102,8 +102,8 @@ public class Settings {
                 '}';
     }
 
-    private String mask(String rowPassword) {
-        return rowPassword == null || rowPassword.isEmpty() ? rowPassword
-                : rowPassword.replaceAll(".", "*");
+    private String mask(String rawPassword) {
+        return Objects.isNull(rawPassword) ? ""
+                : rawPassword.replaceAll(".", "*");
     }
 }
